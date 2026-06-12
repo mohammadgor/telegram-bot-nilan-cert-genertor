@@ -120,6 +120,32 @@ async def button_callback(update: Update, context: CallbackContext):
     elif query.data == "main_menu":
         await show_main_menu(update, context, is_callback=True)
         return ConversationHandler.END
+    elif query.data == "share_cert":
+        reg_number = context.user_data.get("reg_number")
+        cert_data = context.user_data.get("cert_data")
+        
+        if reg_number and cert_data:
+            cert_data.seek(0)
+            await query.message.reply_text("مدرک شما برای اشتراک‌گذاری آماده است! می‌توانید آن را از طریق منوی پیام به اشتراک بگذارید.")
+            cert_data.seek(0)
+            await query.message.reply_photo(
+                photo=cert_data,
+                caption=f"مدرک - شماره ثبت: {reg_number}"
+            )
+        return ConversationHandler.END
+    elif query.data == "forward_cert":
+        reg_number = context.user_data.get("reg_number")
+        cert_data = context.user_data.get("cert_data")
+        
+        if reg_number and cert_data:
+            cert_data.seek(0)
+            await query.message.reply_text("لطفاً فرد یا گروهی که می‌خواهید مدرک را به او فوروارد کنید را انتخاب کنید!")
+            cert_data.seek(0)
+            await query.message.reply_photo(
+                photo=cert_data,
+                caption=f"مدرک - شماره ثبت: {reg_number}"
+            )
+        return ConversationHandler.END
     elif query.data == "send_cert":
         reg_number = context.user_data.get("reg_number")
         cert_data = context.user_data.get("cert_data")
@@ -225,7 +251,9 @@ async def get_course(update: Update, context: CallbackContext):
     save_counter(counter + 1)
     
     keyboard = [
-        [InlineKeyboardButton("ارسال مدرک", callback_data="send_cert")],
+        [InlineKeyboardButton("🔗 اشتراک‌گذاری", callback_data="share_cert")],
+        [InlineKeyboardButton("� فوروارد مدرک", callback_data="forward_cert")],
+        [InlineKeyboardButton("📜 مدرک جدید", callback_data="new_cert")],
         [InlineKeyboardButton("🔙 بازگشت به منو", callback_data="main_menu")]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
